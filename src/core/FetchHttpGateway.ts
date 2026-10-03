@@ -1,5 +1,4 @@
 import type { HttpGateway } from './HttpGateway'
-import { HttpError } from './HttpError'
 
 export class FetchHttpGateway implements HttpGateway {
   readonly #baseUrl: string
@@ -24,7 +23,7 @@ export class FetchHttpGateway implements HttpGateway {
     const url = `${this.#baseUrl}${path}`
     const response = await fetch(url, requestInit)
     if (!response.ok) {
-      throw new HttpError(response.status, url)
+      throw new Error(`Request to ${url} failed with status ${String(response.status)}`)
     }
     return (await response.json()) as ResponseBody
   }

@@ -1,5 +1,4 @@
 import type { HttpGateway } from '../core/HttpGateway'
-import { HttpError } from '../core/HttpError'
 import type { AddBookResponseDto, BookDto } from '../features/books/BooksRepository'
 
 export class FakeBooksApi implements HttpGateway {
@@ -35,10 +34,10 @@ export class FakeBooksApi implements HttpGateway {
 
   #respond(path: string, body: unknown): unknown {
     if (this.isFailing) {
-      throw new HttpError(500, path)
+      throw new Error(`Request to ${path} failed with status 500`)
     }
     if (body === undefined) {
-      throw new HttpError(404, path)
+      throw new Error(`Request to ${path} failed with status 404`)
     }
     return body
   }

@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { FetchHttpGateway } from './FetchHttpGateway'
-import { HttpError } from './HttpError'
 
 const BASE_URL = 'https://api.example.com/v1/books/tester'
 
@@ -39,12 +38,11 @@ describe('FetchHttpGateway', () => {
     })
   })
 
-  it('throws an HttpError when the response is not successful', async () => {
+  it('throws when the response is not successful', async () => {
     stubFetch(new Response('Not found', { status: 404 }))
 
     const request = new FetchHttpGateway(BASE_URL).post('/books', {})
 
-    await expect(request).rejects.toBeInstanceOf(HttpError)
-    await expect(request).rejects.toMatchObject({ status: 404 })
+    await expect(request).rejects.toThrow(`Request to ${BASE_URL}/books failed with status 404`)
   })
 })
