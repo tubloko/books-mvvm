@@ -28,7 +28,7 @@ VITE_API_USER=your-nickname npm run dev
 | `npm run format` / `format:check` | Prettier                       |
 | `npm run build`                   | Production build               |
 
-CI (GitHub Actions) runs format check, lint, typecheck, tests and build on every push.
+CI (GitHub Actions) runs format check, lint, typecheck, tests and build on pushes to `main` and on pull requests.
 
 ## Features
 
@@ -40,17 +40,17 @@ CI (GitHub Actions) runs format check, lint, typecheck, tests and build on every
 ## Architecture
 
 ```
-View ──actions──▶ Controller ──PM──▶ Repository ──DTO──▶ HttpGateway ──▶ REST API
-     ◀──VM (observable)──     ◀──PM──             ◀──DTO──
+View ──actions──▶ Controller ──▶ BooksStore ──PM──▶ Repository ──DTO──▶ HttpGateway ──▶ REST API
+     ◀──VM (observable)──     ◀── observable PM ──     ◀──DTO──
 ```
 
-| Layer          | Responsibility                                                                             | Files                 |
-| -------------- | ------------------------------------------------------------------------------------------ | --------------------- |
-| **View**       | Functional `observer` components. Render the view model and forward user events. No logic. | `*.tsx`               |
-| **Controller** | Per-component state, derived values, validation, messages, user actions (MobX).            | `*Controller.ts`      |
-| **Store**      | Application-wide shared data: all/private books, loading state.                            | `BooksStore.ts`       |
-| **Repository** | Which resource to call, DTO ⇄ domain model mapping, response interpretation.               | `BooksRepository.ts`  |
-| **Gateway**    | HTTP transport only: base URL, JSON, status check.                                         | `FetchHttpGateway.ts` |
+| Layer          | Responsibility                                                                                                  | Files                 |
+| -------------- | --------------------------------------------------------------------------------------------------------------- | --------------------- |
+| **View**       | Functional `observer` components. Render the view model and forward user events. No logic (enforced by ESLint). | `*.tsx`               |
+| **Controller** | Per-component state, derived values, validation, messages, user actions (MobX).                                 | `*Controller.ts`      |
+| **Store**      | Application-wide shared data: all/private books, loading state.                                                 | `BooksStore.ts`       |
+| **Repository** | Which resource to call, DTO ⇄ domain model mapping, response interpretation.                                    | `BooksRepository.ts`  |
+| **Gateway**    | HTTP transport only: base URL, JSON, status check.                                                              | `FetchHttpGateway.ts` |
 
 Models:
 
@@ -78,8 +78,10 @@ src/
   wired once in `createDependencies` (composition root), then provided through a React context.
   Tests build the same graph with an in-memory `FakeBooksApi` instead of `fetch`.
 - **Controller lifecycle.** `useController` creates a local controller once per component instance;
-  controllers that own resources implement `Lifecycle` (`mount` / `unmount`). `BooksListController`
-  starts loading on mount and aborts the in-flight requests on unmount (`AbortController`).
+  controllers that own resources implement `Lifecycle` (`mount` / `unmount`). The app-level
+  `AppController` loads the shared books on mount and aborts in-flight requests on unmount
+  (`AbortController`), so the header and the list never depend on each other.
+- **No logic in views, enforced.** ESLint forbids `if`, ternaries and `&&`/`||`/`??` in `*.tsx`.
 - **Render efficiency.** State changes after `await` are applied in a single `runInAction` batch
   (covered by a test that counts reaction notifications). A newer load aborts the previous one, so
   stale responses never overwrite fresh data.
@@ -100,6 +102,6 @@ the controller logic are verified together.
 
 - `addBook` posted to `/{user}/books`, which returns **404**; the API expects `POST /{user}/`.
 - `response.json()` was not awaited and HTTP errors were not checked.
-- The list used array indexes as React keys.
-- Books created through the API come back without an `id`; the repository falls back to the list
-  position so React keys stay unique.
+- The list used array indexes as React keys for every book. Now the API `id` is used; only books
+  created through the API, which come back without an `id`, fall back to their position — stable,
+  because the API only appends books.
