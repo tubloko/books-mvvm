@@ -20,9 +20,9 @@ export class FetchHttpGateway implements HttpGateway {
     })
   }
 
-  async #request<ResponseBody>(path: string, init: RequestInit): Promise<ResponseBody> {
+  async #request<ResponseBody>(path: string, requestInit: RequestInit): Promise<ResponseBody> {
     const url = `${this.#baseUrl}${path}`
-    const response = await fetch(url, init)
+    const response = await fetch(url, requestInit)
     if (!response.ok) {
       throw new HttpError(response.status, url)
     }
