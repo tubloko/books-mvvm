@@ -51,7 +51,7 @@ describe('AddBookFormController', () => {
 
     await controller.submit()
 
-    expect(headerController.privateBooksCounter).toBe('Your books: 1')
+    expect(headerController.privateBooksCounterLabel).toBe('Your books: 1')
   })
 
   it('shows the submitting state while the book is being added', async () => {
@@ -103,7 +103,7 @@ describe('AddBookFormController', () => {
     const { controller } = setup()
     const preventDefault = vi.fn()
 
-    controller.handleSubmit({ preventDefault } as unknown as SubmitEvent<HTMLFormElement>)
+    controller.submitForm({ preventDefault } as unknown as SubmitEvent<HTMLFormElement>)
 
     expect(preventDefault).toHaveBeenCalled()
   })

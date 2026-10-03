@@ -10,18 +10,20 @@ export const AddBookForm = observer(function AddBookForm() {
     <form
       className="add-book-form"
       aria-labelledby="add-book-title"
-      onSubmit={controller.handleSubmit}
+      onSubmit={controller.submitForm}
     >
       <h2 id="add-book-title">Add a book</h2>
-      <TextField label="Title" value={controller.title} onChange={controller.changeTitle} />
-      <TextField label="Author" value={controller.author} onChange={controller.changeAuthor} />
-      <button
-        type="submit"
-        className="add-book-form__submit"
-        disabled={controller.isSubmitDisabled}
-      >
-        {controller.submitButtonLabel}
-      </button>
+      <fieldset className="add-book-form__fields" disabled={controller.isSubmitting}>
+        <TextField label="Title" value={controller.title} onChange={controller.changeTitle} />
+        <TextField label="Author" value={controller.author} onChange={controller.changeAuthor} />
+        <button
+          type="submit"
+          className="add-book-form__submit"
+          disabled={controller.isSubmitDisabled}
+        >
+          {controller.submitButtonLabel}
+        </button>
+      </fieldset>
       <p role="alert" className="add-book-form__error">
         {controller.errorMessage}
       </p>

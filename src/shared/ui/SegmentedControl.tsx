@@ -12,12 +12,13 @@ interface SegmentedControlProps {
 
 export function SegmentedControl({ label, options }: SegmentedControlProps) {
   return (
-    <div role="group" aria-label={label} className="segmented-control">
+    <div role="radiogroup" aria-label={label} className="segmented-control">
       {options.map((option) => (
         <button
           key={option.key}
           type="button"
-          aria-pressed={option.isSelected}
+          role="radio"
+          aria-checked={option.isSelected}
           className="segmented-control__option"
           onClick={option.select}
         >

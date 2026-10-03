@@ -37,7 +37,7 @@ export class AddBookFormController {
     this.author = event.target.value
   }
 
-  handleSubmit = (event: SubmitEvent<HTMLFormElement>): void => {
+  submitForm = (event: SubmitEvent<HTMLFormElement>): void => {
     event.preventDefault()
     void this.submit()
   }
