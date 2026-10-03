@@ -9,7 +9,14 @@ export class HeaderController {
     makeAutoObservable(this)
   }
 
-  get privateBooksCounter(): string {
-    return `Your books: ${String(this.#booksStore.privateBooksCount)}`
+  get privateBooksCounterLabel(): string {
+    return `Your books: ${this.#privateBooksCountText}`
+  }
+
+  get #privateBooksCountText(): string {
+    if (this.#booksStore.hasLoadingFailed) {
+      return '—'
+    }
+    return this.#booksStore.isLoading ? '…' : String(this.#booksStore.privateBooksCount)
   }
 }

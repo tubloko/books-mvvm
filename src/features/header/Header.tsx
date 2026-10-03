@@ -8,7 +8,7 @@ export const Header = observer(function Header() {
   return (
     <header className="header">
       <h1 className="header__title">Library</h1>
-      <span className="header__counter">{controller.privateBooksCounter}</span>
+      <span className="header__counter">{controller.privateBooksCounterLabel}</span>
     </header>
   )
 })

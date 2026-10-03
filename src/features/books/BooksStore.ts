@@ -5,7 +5,7 @@ import type { BooksRepository } from './BooksRepository'
 export class BooksStore {
   allBooks: Book[] = []
   privateBooks: Book[] = []
-  isLoading = false
+  isLoading = true
   hasLoadingFailed = false
 
   readonly #booksRepository: BooksRepository
