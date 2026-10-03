@@ -13,7 +13,7 @@ export const BooksList = observer(function BooksList() {
       <p role="status" className="books-list__status">
         {controller.statusMessage}
       </p>
-      <ul className="books-list__items" aria-busy={controller.isLoading}>
+      <ul className="books-list__items">
         {controller.books.map((book) => (
           <li key={book.key}>{book.label}</li>
         ))}

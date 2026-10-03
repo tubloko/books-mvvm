@@ -73,14 +73,17 @@ describe('BooksStore', () => {
     expect(booksStore.isLoading).toBe(false)
   })
 
-  it('keeps only the latest loading when a new one starts', async () => {
+  it('aborts the previous loading when a new one starts', async () => {
     const { booksApi, booksStore } = setup()
 
-    const outdatedLoading = booksStore.loadBooks()
-    booksApi.privateBooks = []
-    await Promise.all([outdatedLoading, booksStore.loadBooks()])
+    await Promise.all([booksStore.loadBooks(), booksStore.loadBooks()])
 
-    expect(booksStore.privateBooksCount).toBe(0)
+    expect(booksApi.receivedSignals.map((signal) => signal?.aborted)).toEqual([
+      true,
+      true,
+      false,
+      false,
+    ])
   })
 
   it('reloads books after adding one', async () => {

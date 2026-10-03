@@ -1,5 +1,4 @@
-import { makeAutoObservable } from 'mobx'
-import type { Lifecycle } from '../../../core/Lifecycle'
+import { makeAutoObservable, observableRef } from 'mobx'
 import type { SegmentedControlOption } from '../../../shared/ui/SegmentedControl'
 import type { Book } from '../Book'
 import type { BooksStore } from '../BooksStore'
@@ -10,17 +9,21 @@ export interface BookListItemViewModel {
 }
 
 interface BooksFilter {
-  key: string
   label: string
   selectBooks: (booksStore: BooksStore) => Book[]
 }
 
-const BOOKS_FILTERS: BooksFilter[] = [
-  { key: 'all', label: 'All books', selectBooks: (booksStore) => booksStore.allBooks },
-  { key: 'private', label: 'Private books', selectBooks: (booksStore) => booksStore.privateBooks },
-]
+const ALL_BOOKS_FILTER: BooksFilter = {
+  label: 'All books',
+  selectBooks: (booksStore) => booksStore.allBooks,
+}
 
-const [DEFAULT_FILTER] = BOOKS_FILTERS
+const PRIVATE_BOOKS_FILTER: BooksFilter = {
+  label: 'Private books',
+  selectBooks: (booksStore) => booksStore.privateBooks,
+}
+
+const BOOKS_FILTERS = [ALL_BOOKS_FILTER, PRIVATE_BOOKS_FILTER]
 
 export const BOOKS_STATUS_MESSAGES = {
   loading: 'Loading books…',
@@ -29,40 +32,32 @@ export const BOOKS_STATUS_MESSAGES = {
   none: '',
 }
 
-export class BooksListController implements Lifecycle {
-  selectedFilterKey = DEFAULT_FILTER.key
+export class BooksListController {
+  selectedFilter = ALL_BOOKS_FILTER
 
   readonly #booksStore: BooksStore
 
   constructor(booksStore: BooksStore) {
     this.#booksStore = booksStore
-    makeAutoObservable(this)
+    makeAutoObservable(this, { selectedFilter: observableRef })
   }
 
   get filterOptions(): SegmentedControlOption[] {
     return BOOKS_FILTERS.map((filter) => ({
-      key: filter.key,
+      key: filter.label,
       label: filter.label,
-      isSelected: filter === this.#selectedFilter,
+      isSelected: filter === this.selectedFilter,
       select: () => {
-        this.selectFilter(filter.key)
+        this.selectFilter(filter)
       },
     }))
   }
 
   get books(): BookListItemViewModel[] {
-    return this.#selectedFilter.selectBooks(this.#booksStore).map((book) => ({
+    return this.selectedFilter.selectBooks(this.#booksStore).map((book) => ({
       key: book.id,
       label: `${book.author}: ${book.title}`,
     }))
-  }
-
-  get #selectedFilter(): BooksFilter {
-    return BOOKS_FILTERS.find((filter) => filter.key === this.selectedFilterKey) ?? DEFAULT_FILTER
-  }
-
-  get isLoading(): boolean {
-    return this.#booksStore.isLoading
   }
 
   get statusMessage(): string {
@@ -72,18 +67,10 @@ export class BooksListController implements Lifecycle {
     if (this.books.length > 0) {
       return BOOKS_STATUS_MESSAGES.none
     }
-    return this.isLoading ? BOOKS_STATUS_MESSAGES.loading : BOOKS_STATUS_MESSAGES.empty
+    return this.#booksStore.isLoading ? BOOKS_STATUS_MESSAGES.loading : BOOKS_STATUS_MESSAGES.empty
   }
 
-  selectFilter(filterKey: string): void {
-    this.selectedFilterKey = filterKey
-  }
-
-  mount(): void {
-    void this.#booksStore.loadBooks()
-  }
-
-  unmount(): void {
-    this.#booksStore.cancelLoading()
+  selectFilter(filter: BooksFilter): void {
+    this.selectedFilter = filter
   }
 }

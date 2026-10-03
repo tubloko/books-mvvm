@@ -54,12 +54,9 @@ describe('BooksListController', () => {
     expect(controller.books.map((book) => book.label)).toEqual(['Frank Herbert: Dune'])
   })
 
-  it('shows a loading message while there are no books yet', () => {
-    const { booksStore, controller } = setup()
+  it('shows a loading message until the first books arrive', () => {
+    const { controller } = setup()
 
-    void booksStore.loadBooks()
-
-    expect(controller.isLoading).toBe(true)
     expect(controller.statusMessage).toBe(BOOKS_STATUS_MESSAGES.loading)
   })
 
@@ -88,15 +85,5 @@ describe('BooksListController', () => {
     await booksStore.loadBooks()
 
     expect(controller.statusMessage).toBe(BOOKS_STATUS_MESSAGES.loadingFailed)
-  })
-
-  it('loads books on mount and cancels loading on unmount', () => {
-    const { booksStore, controller } = setup()
-
-    controller.mount()
-    expect(booksStore.isLoading).toBe(true)
-    controller.unmount()
-
-    expect(booksStore.isLoading).toBe(false)
   })
 })
