@@ -3,16 +3,12 @@ import { createRoot } from 'react-dom/client'
 import { App } from './App'
 import { createDependencies } from './core/createDependencies'
 import { DependenciesContext } from './core/Dependencies'
+import { getRootElement } from './core/getRootElement'
 import './styles.css'
-
-const rootElement = document.getElementById('root')
-if (!rootElement) {
-  throw new Error('Root element "#root" is missing in index.html')
-}
 
 const dependencies = createDependencies()
 
-createRoot(rootElement).render(
+createRoot(getRootElement()).render(
   <StrictMode>
     <DependenciesContext value={dependencies}>
       <App />

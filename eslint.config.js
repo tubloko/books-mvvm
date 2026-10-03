@@ -29,4 +29,16 @@ export default typescript.config(
       '@typescript-eslint/consistent-type-imports': 'error',
     },
   },
+  {
+    files: ['**/*.tsx'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        ...['IfStatement', 'ConditionalExpression', 'LogicalExpression'].map((selector) => ({
+          selector,
+          message: 'Views only render: move the logic to a controller.',
+        })),
+      ],
+    },
+  },
 )
