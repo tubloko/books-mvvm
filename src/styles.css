@@ -1,0 +1,84 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #1f2328;
+  background: #f6f8fa;
+}
+
+body {
+  margin: 0;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.header__title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.header__counter {
+  font-weight: 600;
+}
+
+.page {
+  display: grid;
+  gap: 24px;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.segmented-control {
+  display: inline-flex;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.segmented-control__option {
+  padding: 6px 14px;
+  border: 0;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.segmented-control__option[aria-pressed='true'] {
+  background: #0969da;
+  color: #ffffff;
+}
+
+.books-list__items {
+  padding-left: 20px;
+  line-height: 1.8;
+}
+
+.add-book-form {
+  display: grid;
+  gap: 12px;
+}
+
+.text-field {
+  display: grid;
+  gap: 4px;
+}
+
+.text-field__input,
+.add-book-form__submit {
+  padding: 8px;
+  font: inherit;
+}
+
+.add-book-form__error {
+  min-height: 1lh;
+  margin: 0;
+  color: #cf222e;
+}
